@@ -1,10 +1,9 @@
 import os
 import shutil
 import zipfile
-from os import remove
-
 import requests
 
+from tqdm import tqdm
 from utils import get_configs
 
 
@@ -26,17 +25,28 @@ def download_images_zip(url: str, save_path: str = "data/raw"):
     response = requests.get(url, stream=True)
 
     if response.status_code == 200:
-        with open(os.path.join(save_path_absolute, 'lfw.zip'), 'wb') as f:
+        # Get file total size in bytes
+        total_size_in_bytes = int(response.headers.get('content-length', 0))
+        with (open(os.path.join(save_path_absolute, 'lfw.zip'), 'wb') as f,
+              tqdm(total=total_size_in_bytes, unit='B', unit_scale=True, desc="Downloading:") as progress):
+
             for chunk in response.iter_content(chunk_size=1024):
                 if chunk:
                     f.write(chunk)
+                    progress.update(len(chunk))
             print(f"[INFO] Downloaded file to directory: {save_path_absolute}")
     else:
         print(f"[ERROR] Failed to download file from: {url} with status code: {response.status_code}")
 
 
 def extract_images(zip_path: str, extract_to: str = "data/raw/known_faces"):
-    """Extracts Images from given zip file path and deletes all unnecessary files and folders"""
+    """
+    Extracts Images from given zip file path and deletes all unnecessary files and folders
+
+    Args:
+        zip_path (str): path to zip file
+        extract_to (str): path to directory to extract images to
+    """
 
     # Get the extract to absolute path
     extract_to_path_absolute = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", extract_to))
@@ -46,15 +56,15 @@ def extract_images(zip_path: str, extract_to: str = "data/raw/known_faces"):
         print(f"[INFO] Extracted contents to: {extract_to}")
 
     # Remove all non-image files
-    image_exts = { '.jpg', '.jpeg' }
-    for root, dirs, files in os.walk(extract_to_path_absolute):
+    image_exts = {'.jpg', '.jpeg'}
+    for root, dirs, files in tqdm(os.walk(extract_to_path_absolute), desc="Removing non-image files", unit="file"):
         for file in files:
             if not any(file.endswith(ext) for ext in image_exts):
                 os.remove(os.path.join(root, file))
                 print(f"[INFO] Removed file: {file}")
 
     # Move contents of data/raw/known_faces/lfw-deepfunneled/lfw-deepfunneled to data/raw/known_faces
-    for item in os.listdir(os.path.join(extract_to_path_absolute, 'lfw-deepfunneled/lfw-deepfunneled')):
+    for item in tqdm(os.listdir(os.path.join(extract_to_path_absolute, 'lfw-deepfunneled/lfw-deepfunneled')), desc="Moving files", unit="file"):
         source_path = os.path.join(extract_to_path_absolute, 'lfw-deepfunneled/lfw-deepfunneled', item)
         destination_path = os.path.join(extract_to_path_absolute, item)
         shutil.move(source_path, destination_path)
@@ -62,7 +72,10 @@ def extract_images(zip_path: str, extract_to: str = "data/raw/known_faces"):
     shutil.rmtree(os.path.join(extract_to_path_absolute, 'lfw-deepfunneled'))
     os.remove(zip_path)
 
-if __name__ == "__main__":
+
+def download_and_prepare_images():
+    """Downloads images zip file and extracts it's contents"""
+
     # Get data download url
     download_url = get_configs()['data_download_url']
 
@@ -73,3 +86,7 @@ if __name__ == "__main__":
 
     # Extract the downloaded images
     extract_images(zip_url)
+
+
+if __name__ == '__main__':
+    download_and_prepare_images()
