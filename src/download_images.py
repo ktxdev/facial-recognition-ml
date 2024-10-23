@@ -62,14 +62,13 @@ def extract_images(zip_path: str, extract_to: str = "data/raw/known_faces"):
             if not any(file.endswith(ext) for ext in image_exts):
                 os.remove(os.path.join(root, file))
                 print(f"[INFO] Removed file: {file}")
+            else:
+                shutil.move(os.path.join(root, file), os.path.join(extract_to_path_absolute, file))
 
-    # Move contents of data/raw/known_faces/lfw-deepfunneled/lfw-deepfunneled to data/raw/known_faces
-    for item in tqdm(os.listdir(os.path.join(extract_to_path_absolute, 'lfw-deepfunneled/lfw-deepfunneled')), desc="Moving files", unit="file"):
-        source_path = os.path.join(extract_to_path_absolute, 'lfw-deepfunneled/lfw-deepfunneled', item)
-        destination_path = os.path.join(extract_to_path_absolute, item)
-        shutil.move(source_path, destination_path)
+    for root, dirs, _ in tqdm(os.walk(extract_to_path_absolute, topdown=False), desc="Removing sub-directories", unit="folder"):
+        for dir in dirs:
+            os.rmdir(os.path.join(root, dir))
 
-    shutil.rmtree(os.path.join(extract_to_path_absolute, 'lfw-deepfunneled'))
     os.remove(zip_path)
 
 
@@ -90,3 +89,6 @@ def download_and_prepare_images():
 
 if __name__ == '__main__':
     download_and_prepare_images()
+
+
+
