@@ -1,9 +1,12 @@
 from sklearn.metrics import f1_score, accuracy_score, recall_score, precision_score
 
 from experiment_logger import log_experiment
+from src.data_preprocessing import load_data, DataType
 
 
-def evaluate_model(model_name, pipeline, X_test, y_test):
+def evaluate_model(model_name, pipeline):
+    X_test, y_test = load_data(DataType.TEST)
+
     y_pred = pipeline.predict(X_test)
 
     param_grid = pipeline.param_grid
@@ -16,5 +19,7 @@ def evaluate_model(model_name, pipeline, X_test, y_test):
     }
 
     log_experiment(model_name, pipeline.best_params_, pipeline.refit_time_, eval_metrics, param_grid)
+
+    print(f"[INFO] Training results: {eval_metrics}")
 
     return eval_metrics

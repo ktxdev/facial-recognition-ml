@@ -1,11 +1,20 @@
 import os
+from typing import Tuple, List
+
 import cv2 as cv
 import numpy as np
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
 from tqdm import tqdm
-from typing import List, Tuple
+from enum import Enum
 from scipy.sparse import csr_matrix
+
+CHUNK_SIZE = 1000
+
+class DataType(Enum):
+    TRAIN = 'train'
+    TEST = 'test'
 
 def encode_image(image_path: str) -> np.ndarray:
     """Transforms given image into a feature vector"""
@@ -15,7 +24,7 @@ def encode_image(image_path: str) -> np.ndarray:
     return image_resize.flatten()
 
 
-def encode_images(images_path: str = '/data/raw/known_faces') -> Tuple[List[np.ndarray], np.ndarray] :
+def encode_images(images_path: str = '/data/raw/known_faces') -> pd.DataFrame:
     """Generates feature vectors from images"""
     feature_vectors = []
     labels = []
@@ -29,32 +38,41 @@ def encode_images(images_path: str = '/data/raw/known_faces') -> Tuple[List[np.n
         labels.append(label)
         feature_vectors.append(feature_vector)
 
-    return feature_vectors, np.array(labels)
+    dfs = []
+    for start in tqdm(range(0, len(feature_vectors), CHUNK_SIZE), desc="Creating Chunk DataFrames", unit="file"):
+        end = min(start + 1000, len(feature_vectors))
+        chunk_sparse_matrix = csr_matrix(feature_vectors[start:end])
+        df = pd.DataFrame.sparse.from_spmatrix(chunk_sparse_matrix)
+        df['label'] = labels[start:end]
+        dfs.append(df)
+
+    return pd.concat(dfs, ignore_index=True)
 
 
-def save_data(feature_vectors: List[np.ndarray], labels: np.ndarray, save_dir_path: str = "data/processed"):
+def save_data(df: pd.DataFrame, data_type: DataType = DataType.TRAIN, save_dir_path: str = "data/processed"):
     """Saves feature vectors and labels in csv file"""
+    save_dir_path = save_dir_path + "/train" if data_type == DataType.TRAIN else save_dir_path + "/test"
+
     dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", save_dir_path))
 
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
         print(f"[INFO] Created directory: {dir_path}")
 
-    chunk_size = 1000
-    for start in tqdm(range(0, len(feature_vectors), chunk_size), desc="Creating Chunk DataFrame", unit="file"):
-        end = min(start + 1000, len(feature_vectors))
-        chunk_sparse_matrix = csr_matrix(feature_vectors[start:end])
-        df = pd.DataFrame.sparse.from_spmatrix(chunk_sparse_matrix)
-        df['label'] = labels[start:end]
-        df.to_csv(os.path.join(dir_path, f"data_{start // chunk_size + 1:02d}.csv"), index=False)
+    for i, chunk in enumerate(tqdm(range(0, df.shape[0], CHUNK_SIZE), desc=f"Saving {data_type.value} data", unit="file")):
+        chunk_df = df.iloc[chunk:chunk + CHUNK_SIZE]
+        filename = os.path.join(dir_path, f"data_{i + 1}.csv")
+        chunk_df.to_csv(filename, index=False)
 
 
-def load_data(data_path="data/processed"):
+def load_data(data_type: DataType = DataType.TRAIN, data_path="data/processed") -> Tuple[List[np.ndarray], np.ndarray]:
     """Loads data from csv file"""
+    data_path = data_path + "/train" if data_type == DataType.TRAIN else data_path + "/test"
+
     data_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", data_path))
 
     dfs = []
-    for file in tqdm(os.listdir(data_path), desc="Loading data", unit="file"):
+    for file in tqdm(os.listdir(data_path), desc=f"Loading {data_type.value} data", unit="file"):
         if file.endswith(".csv"):
             df = pd.read_csv(os.path.join(data_path, file))
             dfs.append(df)
@@ -71,6 +89,9 @@ if __name__ == '__main__':
     # Get Path to images directory
     images_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'data/raw/known_faces'))
     # Extract features from images
-    feature_vectors, labels = encode_images(images_dir)
+    df = encode_images(images_dir)
+    # Split into train and test sets
+    train_data, test_data = train_test_split(df, test_size=0.2, random_state=42)
     # Save features to csv
-    save_data(feature_vectors, labels)
+    save_data(train_data, DataType.TRAIN)
+    save_data(test_data, DataType.TEST)
