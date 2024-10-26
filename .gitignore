@@ -1,3 +1,5 @@
 .idea
 /data/raw/known_faces
 data_*.csv
+*.DS_Store
+**/__pycache__/
