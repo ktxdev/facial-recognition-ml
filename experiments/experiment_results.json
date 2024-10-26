@@ -2,13 +2,13 @@
     "experiment_1": {
         "model_name": "kNN",
         "best_params": {
-            "knn__n_neighbors": 10,
+            "knn__n_neighbors": 3,
             "knn__p": 1,
             "knn__weights": "distance",
-            "pca__n_components": 150,
+            "pca__n_components": 100,
             "skb__k": 1000
         },
-        "best_fit_time_in_sec": 3.8428,
+        "best_fit_time_in_sec": 4.6639,
         "param_grid": {
             "skb__k": [
                 1000,
@@ -16,14 +16,14 @@
                 2000
             ],
             "pca__n_components": [
+                100,
                 150,
-                200,
-                250
+                200
             ],
             "knn__n_neighbors": [
-                10,
-                15,
-                20
+                3,
+                5,
+                7
             ],
             "knn__weights": [
                 "uniform",
@@ -34,26 +34,66 @@
                 2
             ]
         },
-        "accuracy": 0.1632,
-        "f1-score": 0.1255,
-        "recall": 0.1632,
-        "precision": 0.1258
+        "accuracy": 0.1454,
+        "f1-score": 0.1314,
+        "recall": 0.1454,
+        "precision": 0.1474
     },
     "experiment_2": {
         "model_name": "kNN",
         "best_params": {
-            "knn__n_neighbors": 10,
+            "knn__n_neighbors": 3,
             "knn__p": 1,
             "knn__weights": "distance",
             "pca__n_components": 100,
-            "skb__k": 800
+            "skb__k": 1000
         },
-        "best_fit_time_in_sec": 3.6984,
+        "best_fit_time_in_sec": 4.4408,
         "param_grid": {
             "skb__k": [
-                800,
+                500,
+                750,
+                1000
+            ],
+            "pca__n_components": [
+                50,
+                75,
+                100
+            ],
+            "knn__n_neighbors": [
+                3,
+                5,
+                7
+            ],
+            "knn__weights": [
+                "uniform",
+                "distance"
+            ],
+            "knn__p": [
+                1,
+                2
+            ]
+        },
+        "accuracy": 0.1454,
+        "f1-score": 0.1314,
+        "recall": 0.1454,
+        "precision": 0.1474
+    },
+    "experiment_3": {
+        "model_name": "kNN",
+        "best_params": {
+            "knn__n_neighbors": 3,
+            "knn__p": 1,
+            "knn__weights": "distance",
+            "pca__n_components": 200,
+            "skb__k": 1000
+        },
+        "best_fit_time_in_sec": 4.8808,
+        "param_grid": {
+            "skb__k": [
                 1000,
-                1500
+                1500,
+                2000
             ],
             "pca__n_components": [
                 100,
@@ -61,9 +101,9 @@
                 200
             ],
             "knn__n_neighbors": [
+                3,
                 5,
-                7,
-                10
+                7
             ],
             "knn__weights": [
                 "uniform",
@@ -74,9 +114,49 @@
                 2
             ]
         },
-        "accuracy": 0.1473,
-        "f1-score": 0.1055,
-        "recall": 0.1473,
-        "precision": 0.1016
+        "accuracy": 0.1594,
+        "f1-score": 0.1416,
+        "recall": 0.1594,
+        "precision": 0.159
+    },
+    "experiment_4": {
+        "model_name": "kNN",
+        "best_params": {
+            "knn__n_neighbors": 3,
+            "knn__p": 1,
+            "knn__weights": "distance",
+            "pca__n_components": 200,
+            "skb__k": 1000
+        },
+        "best_fit_time_in_sec": 5.2502,
+        "param_grid": {
+            "skb__k": [
+                500,
+                750,
+                1000
+            ],
+            "pca__n_components": [
+                200,
+                250,
+                300
+            ],
+            "knn__n_neighbors": [
+                2,
+                3,
+                5
+            ],
+            "knn__weights": [
+                "uniform",
+                "distance"
+            ],
+            "knn__p": [
+                1,
+                2
+            ]
+        },
+        "accuracy": 0.1594,
+        "f1-score": 0.1416,
+        "recall": 0.1594,
+        "precision": 0.159
     }
 }

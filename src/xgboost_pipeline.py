@@ -1,12 +1,12 @@
 import numpy as np
-from numpy.f2py.crackfortran import verbose
+
 from xgboost import XGBClassifier
 from sklearn.decomposition import PCA
 from sklearn.pipeline import Pipeline
 from sklearn.base import BaseEstimator, ClassifierMixin
-from sklearn.model_selection import GridSearchCV, LeaveOneOut, StratifiedKFold
-from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.utils.class_weight import compute_class_weight
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.model_selection import GridSearchCV, StratifiedKFold
 
 
 class XGBClassifierWithLabelEncoder(BaseEstimator, ClassifierMixin):
@@ -17,7 +17,7 @@ class XGBClassifierWithLabelEncoder(BaseEstimator, ClassifierMixin):
         self.best_params_ = None
         self.best_score_ = None
 
-    def fit(self, X, y,  *args, **kwargs):
+    def fit(self, X, y, *args, **kwargs):
         # Encode labels
         y_encoded = self.encoder_.fit_transform(y)
         # compute class weights
@@ -59,4 +59,4 @@ def create_xgboost_pipeline():
 
     skf = StratifiedKFold(n_splits=2, shuffle=True, random_state=42)
 
-    return GridSearchCV(pipeline, param_grid, cv=skf, n_jobs=6, verbose=3)
+    return GridSearchCV(pipeline, param_grid, cv=skf, n_jobs=6, verbose=3, scoring='f1_weighted')

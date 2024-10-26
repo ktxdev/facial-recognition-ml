@@ -53,7 +53,7 @@ def extract_images(zip_path: str, extract_to: str = "data/raw/known_faces"):
 
     with zipfile.ZipFile(zip_path, "r") as zip_ref:
         zip_ref.extractall(extract_to_path_absolute)
-        print(f"[INFO] Extracted contents to: {extract_to}")
+        print(f"[INFO] Extracted contents to: {extract_to_path_absolute}")
 
     # Remove all non-image files
     image_exts = {'.jpg', '.jpeg'}
