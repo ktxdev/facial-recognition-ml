@@ -1,11 +1,10 @@
-from sklearn import pipeline
-
-from evaluate_model import evaluate_model
-from svm_pipeline import create_svm_pipeline
-from knn_pipeline import create_knn_pipeline
-from data_preprocessing import DataType, load_data
-from xgboost_pipeline import create_xgboost_pipeline
 from sklearn.model_selection import train_test_split
+
+from data_preprocessing import DataType, load_data
+from evaluate_model import evaluate_model
+from knn_pipeline import create_knn_pipeline
+from svm_pipeline import create_svm_pipeline
+from xgboost_pipeline import create_xgboost_pipeline
 
 
 def train_svm(X, y):

@@ -1,7 +1,7 @@
 from sklearn.metrics import f1_score, accuracy_score, recall_score, precision_score
 
 from experiment_logger import log_experiment
-from src.data_preprocessing import load_data, DataType
+from data_preprocessing import DataType, load_data
 
 
 def evaluate_model(model_name, pipeline):
