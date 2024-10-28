@@ -2,7 +2,7 @@ from sklearn.decomposition import PCA
 from sklearn.feature_selection import SelectKBest
 from sklearn.model_selection import StratifiedKFold, RandomizedSearchCV
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler, RobustScaler
+from sklearn.preprocessing import RobustScaler
 from sklearn.svm import SVC
 
 
@@ -21,7 +21,7 @@ def create_svm_pipeline():
         'svc__gamma': ['scale', 0.01, 0.001],
         'svc__class_weight': ['balanced'],
         'svc__kernel': ['linear', 'rbf', 'poly'],
-        'svc__degree': [2, 3, 4]
+        'svc__degree': [5, 7, 10]
     }
 
     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
