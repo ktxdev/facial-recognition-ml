@@ -33,4 +33,4 @@ def train_and_evaluate_xgboost_model():
 
 
 if __name__ == '__main__':
-    train_and_evaluate_xgboost_model()
+    train_and_evaluate_svm_model()

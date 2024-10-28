@@ -35,13 +35,13 @@ def create_knn_pipeline():
     ])
 
     param_grid = {
-        'skb__k': [500, 750, 1000],
-        'pca__n_components': [200, 250, 300],
+        'skb__k': [1000, 1500, 2000],
+        'pca__n_components': [100, 150, 200],
         'knn__n_neighbors': [2, 3, 5],
         'knn__weights': ['uniform', 'distance'],
         'knn__p': [1, 2]
     }
 
-    skf = StratifiedKFold(n_splits=2, shuffle=True, random_state=42)
+    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 
     return GridSearchCV(pipeline, param_grid, cv=skf, n_jobs=6, verbose=3, scoring='f1_weighted')

@@ -1,4 +1,5 @@
 import os
+from collections import defaultdict
 from typing import Tuple, List
 
 import cv2 as cv
@@ -38,12 +39,27 @@ def encode_images(images_path: str = '/data/raw/known_faces') -> pd.DataFrame:
         labels.append(label)
         feature_vectors.append(feature_vector)
 
+    label_count = defaultdict(int)
+    for label in labels:
+        label_count[label] += 1
+
+    valid_labels = [label for label, count in label_count.items() if count >= 10]
+
+    filtered_features = []
+    filtered_labels = []
+    filtered_labels_count = defaultdict(int)
+    for feature, label in zip(feature_vectors, labels):
+        if label in valid_labels and filtered_labels_count[label] < 10:
+            filtered_features.append(feature)
+            filtered_labels.append(label)
+            filtered_labels_count[label] += 1
+
     dfs = []
-    for start in tqdm(range(0, len(feature_vectors), CHUNK_SIZE), desc="Creating Chunk DataFrames", unit="file"):
-        end = min(start + 1000, len(feature_vectors))
-        chunk_sparse_matrix = csr_matrix(feature_vectors[start:end])
+    for start in tqdm(range(0, len(filtered_features), CHUNK_SIZE), desc="Creating Chunk DataFrames", unit="file"):
+        end = min(start + 1000, len(filtered_features))
+        chunk_sparse_matrix = csr_matrix(filtered_features[start:end])
         df = pd.DataFrame.sparse.from_spmatrix(chunk_sparse_matrix)
-        df['label'] = labels[start:end]
+        df['label'] = filtered_labels[start:end]
         dfs.append(df)
 
     return pd.concat(dfs, ignore_index=True)
