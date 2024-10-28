@@ -7,7 +7,7 @@ git clone https://github.com/ktxdev
 python 3.11 **or** conda 24.9
 ### Create & Activate Virtual Environment
 ```shell
-cd /path/to/your/project
+cd /path/to/facial-recognition-ml
 ```
 #### Option 1: Using Python's venv
 ##### Create the environment
