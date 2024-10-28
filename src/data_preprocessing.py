@@ -100,8 +100,7 @@ def load_data(data_type: DataType = DataType.TRAIN, data_path="data/processed") 
 
     return X, y
 
-
-if __name__ == '__main__':
+def preprocess_image_data():
     # Get Path to images directory
     images_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'data/raw/known_faces'))
     # Extract features from images
@@ -111,3 +110,6 @@ if __name__ == '__main__':
     # Save features to csv
     save_data(train_data, DataType.TRAIN)
     save_data(test_data, DataType.TEST)
+
+if __name__ == '__main__':
+    preprocess_image_data()

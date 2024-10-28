@@ -44,6 +44,13 @@ conda deactivate
 ```shell
 pip install -r requirements.txt
 ```
-- Experiment 1 and 2 in the experiments log file used MinMaxScaler
-and experiment 3-4 used StandardScaler
-- 
+## Download images and preprocess data
+```shell
+python setup.py
+```
+## Train models
+```shell
+cd src
+python train.py [option]
+```
+**NB:** Valid options are svm, knn, xgb and all
