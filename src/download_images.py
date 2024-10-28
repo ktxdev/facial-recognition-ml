@@ -38,6 +38,12 @@ def download_images_zip(url: str, save_path: str = "data/raw"):
     else:
         print(f"[ERROR] Failed to download file from: {url} with status code: {response.status_code}")
 
+def is_image_file(file):
+    image_exts = {'.jpg', '.jpeg'}
+    return any(file.endswith(ext) for ext in image_exts)
+
+def count_images_in_dir(directory):
+    return sum(1 for file in os.listdir(directory) if is_image_file(file))
 
 def extract_images(zip_path: str, extract_to: str = "data/raw/known_faces"):
     """
@@ -53,21 +59,23 @@ def extract_images(zip_path: str, extract_to: str = "data/raw/known_faces"):
 
     with zipfile.ZipFile(zip_path, "r") as zip_ref:
         zip_ref.extractall(extract_to_path_absolute)
-        print(f"[INFO] Extracted contents to: {extract_to_path_absolute}")
+        print(f"[INFO] Extracted contents to: {extract_to}")
 
     # Remove all non-image files
-    image_exts = {'.jpg', '.jpeg'}
-    for root, dirs, files in tqdm(os.walk(extract_to_path_absolute), desc="Removing non-image files", unit="file"):
+    for root, _, files in tqdm(os.walk(extract_to_path_absolute), desc="Removing non-image files", unit="file"):
         for file in files:
-            if not any(file.endswith(ext) for ext in image_exts):
+            if not is_image_file(file):
                 os.remove(os.path.join(root, file))
                 print(f"[INFO] Removed file: {file}")
+
+            if count_images_in_dir(root) < 10:
+                continue
             else:
                 shutil.move(os.path.join(root, file), os.path.join(extract_to_path_absolute, file))
 
     for root, dirs, _ in tqdm(os.walk(extract_to_path_absolute, topdown=False), desc="Removing sub-directories", unit="folder"):
-        for dir in dirs:
-            os.rmdir(os.path.join(root, dir))
+        for directory in dirs:
+            shutil.rmtree(os.path.join(root, directory))
 
     os.remove(zip_path)
 
@@ -89,6 +97,8 @@ def download_and_prepare_images():
 
 if __name__ == '__main__':
     download_and_prepare_images()
+
+
 
 
 
