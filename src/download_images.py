@@ -4,7 +4,7 @@ import zipfile
 import requests
 
 from tqdm import tqdm
-from utils import get_configs
+from src.utils import get_configs
 
 
 def download_images_zip(url: str, save_path: str = "data/raw"):
@@ -89,6 +89,3 @@ def download_and_prepare_images():
 
 if __name__ == '__main__':
     download_and_prepare_images()
-
-
-

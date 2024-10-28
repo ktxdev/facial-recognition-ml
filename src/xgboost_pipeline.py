@@ -50,6 +50,6 @@ def create_xgboost_pipeline():
         'xgboost__learning_rate': [0.01, 0.1, 0.2]
     }
 
-    skf = StratifiedKFold(n_splits=2, shuffle=True, random_state=42)
+    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 
     return GridSearchCV(pipeline, param_grid, cv=skf, n_jobs=6, verbose=3, scoring='f1_weighted')

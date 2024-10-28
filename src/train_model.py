@@ -31,6 +31,10 @@ def train_and_evaluate_xgboost_model():
 
     evaluate_model('XGBoost', pipeline)
 
+def train_and_evaluate_all_models():
+    train_and_evaluate_knn_model()
+    train_and_evaluate_svm_model()
+    train_and_evaluate_xgboost_model()
 
 if __name__ == '__main__':
     train_and_evaluate_xgboost_model()
