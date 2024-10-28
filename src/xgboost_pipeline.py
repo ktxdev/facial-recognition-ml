@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.decomposition import PCA
+from sklearn.feature_selection import SelectKBest
 from sklearn.model_selection import GridSearchCV, StratifiedKFold
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder, StandardScaler
@@ -33,17 +34,18 @@ class XGBClassifierWithLabelEncoder(XGBClassifier):
 def create_xgboost_pipeline():
     pipeline = Pipeline([
         ('scaler', StandardScaler()),
+        ('skb', SelectKBest()),
         ('pca', PCA()),
         ('xgboost', XGBClassifierWithLabelEncoder())
     ])
 
     param_grid = {
+        'skb__k': [1000, 1500, 2000],
         'pca__n_components': [100, 150, 200],
         'xgboost__booster': ['gbtree'],
         'xgboost__objective': ['multi:softprob'],
         'xgboost__eval_metric': ['logloss'],
         'xgboost__n_estimators': [200, 300],
-        'xgboost__early_stopping_rounds': [20, 30],
         'xgboost__max_depth': [4, 7, 10],
         'xgboost__learning_rate': [0.01, 0.1, 0.2]
     }
